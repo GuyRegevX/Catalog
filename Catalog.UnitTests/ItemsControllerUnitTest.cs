@@ -25,8 +25,7 @@ public class ItemsControllerUnitTest
 
         var result = await controller.GetItemAsync(Guid.NewGuid());
 
-        Assert.IsType<NotFoundResult>(result.Result);
-
+        result.Result.Should().BeOfType<NotFoundResult>();
     }
 
     [Fact]
