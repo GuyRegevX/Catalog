@@ -1,6 +1,7 @@
-using Catalog.Entities;
+using Catalog.Api.Entities;
+using Catalog.Api.Entities;
 
-namespace Catalog.Repositories;
+namespace Catalog.Api.Repositories;
 
 public interface IItemRepository
 {

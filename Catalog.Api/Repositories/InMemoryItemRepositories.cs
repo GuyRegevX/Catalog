@@ -1,7 +1,5 @@
-using Catalog.Entities;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace Catalog.Repositories;
+using Catalog.Api.Entities;
+namespace Catalog.Api.Repositories;
 
 public class InMemoryItemRepositories : IItemRepository
 

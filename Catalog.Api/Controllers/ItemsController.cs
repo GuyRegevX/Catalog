@@ -1,9 +1,9 @@
-using Catalog.Dtos;
-using Catalog.Entities;
-using Catalog.Repositories;
+using Catalog.Api.Dtos;
+using Catalog.Api.Entities;
+using Catalog.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Catalog.Controllers;
+namespace Catalog.Api.Controllers;
 
 //Get => /items
 [ApiController]
@@ -47,7 +47,7 @@ public class ItemsController: ControllerBase
                         Id = Guid.NewGuid(),
                         Name = createItemDto.Name,
                         Price = createItemDto.Price,
-                        CreatedDate = DateTimeOffset.Now
+                        CreatedDate = DateTimeOffset.UtcNow
                 };
                 await _repository.CreateItemAsync(item) ;
                 return CreatedAtAction( nameof(GetItemAsync), new { id = item.Id }, item.AsDto());
