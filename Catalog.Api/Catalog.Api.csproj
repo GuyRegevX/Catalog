@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>c3803ca0-418c-4eb4-a434-cc82bfaa3e27</UserSecretsId>
-    <RootNamespace>Catalog</RootNamespace>
+    <RootNamespace>Catalog.Api</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

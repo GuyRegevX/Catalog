@@ -1,4 +1,5 @@
-using Catalog.Entities;
+using Catalog.Api.Entities;
+using Catalog.Api.Repositories;
 using MongoDB.Bson;
 using MongoDB.Driver;
 

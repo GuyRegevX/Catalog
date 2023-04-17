@@ -1,4 +1,4 @@
-namespace Catalog
+namespace Catalog.Api
 {
     public class Program
     {

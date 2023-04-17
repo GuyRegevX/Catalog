@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using System.Text.Json;
+using Catalog.Api.Repositories;
 using Catalog.Repositories;
 using Catalog.Setting;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -9,7 +10,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
-namespace Catalog;
+namespace Catalog.Api;
 
 public class Startup
 {
