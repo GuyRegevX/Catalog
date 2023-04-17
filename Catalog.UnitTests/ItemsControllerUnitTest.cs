@@ -15,7 +15,7 @@ public class ItemsControllerUnitTest
     private readonly Mock<ILogger<ItemsController>> loggerStub = new();
     private readonly Random rand = new();
     [Fact]
-    public async Task GetItemSync_WithUnExistingItem_ReturnsNotFound()
+    public async Task GetItemAsync_WithUnExistingItem_ReturnsNotFound()
     {
         repositoryStub.Setup(repo => repo.GetItemAsync(It.IsAny<Guid>()))!.ReturnsAsync((Item)null!);
 
@@ -29,7 +29,7 @@ public class ItemsControllerUnitTest
     
 
     [Fact]
-    public async Task GetItemSync_WithExistingItem_ReturnsExpectedItem()
+    public async Task GetItemAsync_WithExistingItem_ReturnsExpectedItem()
     {
         //Arrange
         var expectedItem = CreateRandomItem();
@@ -41,15 +41,12 @@ public class ItemsControllerUnitTest
         //Assert
         Assert.IsType<OkObjectResult>(result.Result);
         var dto = (ItemDto)(result.Result as OkObjectResult)?.Value!;
-        dto.Should().BeEquivalentTo(
-                expectedItem,
-            options => options.ComparingByMembers<Item>()
-                );
+        dto.Should().BeEquivalentTo(expectedItem);
             
     }
 
     [Fact]
-    public async Task GetItemsSync_WithExistingItems_ReturnsAllItems()
+    public async Task GetItemsAsync_WithExistingItems_ReturnsAllItems()
     {
         //Arrange
         var expectedItems = new[] { CreateRandomItem(), CreateRandomItem(), CreateRandomItem() };
@@ -60,52 +57,51 @@ public class ItemsControllerUnitTest
         var actualItems = await controller.GetItemsAsync();
         
         //Assert
-        actualItems.Should().BeEquivalentTo(
-            expectedItems,
-            options => options.ComparingByMembers<Item>()
-        );
+        actualItems.Should().BeEquivalentTo(expectedItems);
+    }
+    
+    [Fact]
+    public async Task GetItemsAsync_WithMatchingItems_ReturnsMatchingItems()
+    {
+        //Arrange
+        var allItems  = new[]
+        {
+            new Item(){Name = "Potion"},
+            new Item(){Name = "Antidote"},
+            new Item(){Name = "Hi-Potion"},
+        };
+
+        var nameToMatch = "Potion";
+        
+        repositoryStub.Setup(repo => repo.GetItemsAsync()).ReturnsAsync(allItems);
+        
+        var controller = new ItemsController(repositoryStub.Object, loggerStub.Object);
+
+        //Act
+        IEnumerable<ItemDto> foundItems = await controller.GetItemsAsync(nameToMatch);
+
+        //Assert
+        foundItems.Should().OnlyContain(item => item.Name == allItems[0].Name || item.Name == allItems[2].Name);
     }
 
     [Fact]
-    public Task CreateItemsSync_WithItemToCreate_ReturnsCreatedItem()
+    public Task CreateItemsAsync_WithItemToCreate_ReturnsCreatedItem()
     {
-        var itemToCreate = new CreateItemDto()
-        {
-            Name = Guid.NewGuid().ToString(),
-            Price = rand.Next(100)
-        };
+        var itemToCreate = new CreateItemDto(
+            Guid.NewGuid().ToString(),
+            Guid.NewGuid().ToString(),
+            rand.Next(100));
         var controller = new ItemsController(repositoryStub.Object, loggerStub.Object);
         var result = controller.CreateItemAsync(itemToCreate);
         var createdItem =  (result.Result.Result as CreatedAtActionResult).Value as ItemDto;
-        createdItem.Should().BeEquivalentTo(
-            itemToCreate,
-            options => options.ComparingByMembers<Item>().ExcludingMissingMembers()
-        );
+        createdItem.Should().BeEquivalentTo(itemToCreate);
         createdItem.Id.Should().NotBeEmpty();
         createdItem.CreatedDate.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromMilliseconds(3000));
         return Task.CompletedTask;
     }
 
     [Fact]
-    public async Task UpdateItemSync_WithItemToUpdate_ReturnsNoContent()
-    {
-        var expectedItem = CreateRandomItem();
-        repositoryStub.Setup(repo => repo.GetItemAsync(It.IsAny<Guid>())).ReturnsAsync((expectedItem));
-
-        var itemId = expectedItem.Id;
-        var itemToUpdate = new UpdateItemDto()
-        {
-            Name = Guid.NewGuid().ToString(),
-            Price = expectedItem.Price + 3
-        };
-            
-        var controller = new ItemsController(repositoryStub.Object, loggerStub.Object);
-        var result = await controller.UpdateItem(itemId, itemToUpdate);
-        result.Should().BeOfType<NoContentResult>();
-    }
-    
-    [Fact]
-    public async Task DeleteItemSync_ItemExists_ReturnsNoContent()
+    public async Task UpdateItemAsAsync_ItemExists_ReturnsNoContent()
     {
         var expectedItem = CreateRandomItem();
         repositoryStub.Setup(repo => repo.GetItemAsync(It.IsAny<Guid>())).ReturnsAsync((expectedItem));
